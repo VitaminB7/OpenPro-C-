@@ -149,14 +149,9 @@ int main()
             {
                 if(vBullet[i].getGlobalBounds().findIntersection(vEnemyTexture[k].getGlobalBounds()))
                 {
-                    if (vEnemyHP[k].HP<=0)
-                    {
-                        vEnemyTexture.erase(vEnemyTexture.begin()+k); vEnemyHP.erase(vEnemyHP.begin()+k); //die
-                    }
-                    else
-                    {
-                        vEnemyHP[k].HP--;//dmg
-                    }
+                    
+                    vEnemyHP[k].HP--;//dmg
+                    
                     if (vEnemyHP[k].HP<=0)
                     {
                         vEnemyTexture.erase(vEnemyTexture.begin()+k); vEnemyHP.erase(vEnemyHP.begin()+k); //die
