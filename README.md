@@ -1,59 +1,110 @@
 # OpenPro-C-
 รายงานตัว01
 
-double ComplexNumber::abs(){
-    return sqrt(real*real+imag*imag);
-}
-		
-double ComplexNumber::angle(){
-    return atan2(imag,real)* 180 / M_PI;
-}
+#include<iostream>
+#include<fstream>
+#include<vector>
+#include<string>
+#include<cstdlib>
 
-ComplexNumber ComplexNumber::operator*(const ComplexNumber &c){
-	double r,i;
-	r = real*c.real + imag * -c.imag ;
-	i = real*c.imag +imag*c.real ;
-	return ComplexNumber(r,i);
-}
+using namespace std;
 
-ComplexNumber ComplexNumber::operator/(const ComplexNumber &c){
-	double r,i;
-	r = (real*c.real + imag * c.imag)/(c.real*c.real + c.imag*c.imag);
-	i = (imag*c.real - real*c.imag)/(c.real*c.real + c.imag*c.imag);
-	return ComplexNumber(r,i);
+char score2grade(int score){
+    if(score >= 80) return 'A';
+    if(score >= 70) return 'B';
+    if(score >= 60) return 'C';
+    if(score >= 50) return 'D';
+    else return 'F';
 }
 
-ostream & operator<<(ostream &os,const ComplexNumber &c){
-    if(c.real == 0 && c.imag != 0) return os<<c.imag<<"i";
-    else if(c.real != 0 && c.imag == 0) return os<<c.real;
-    else if(c.real == 0 && c.imag == 0) return os<<"0";
-    if(c.imag>=0)return os<<c.real<<"+"<<c.imag<<"i";
-    return os<<c.real<<c.imag<<"i";
+string toUpperStr(string x){
+    string y = x;
+    for(unsigned i = 0; i < x.size();i++) y[i] = toupper(x[i]);
+    return y;
 }
 
-ComplexNumber operator+(double d,const ComplexNumber &c){
-	return ComplexNumber(d+c.real,c.imag);
+void importDataFromFile(string textfile,vector<string> &names,vector<int> &scores,vector<char> &grades)
+{
+    ifstream source(textfile);
+    string a;
+    int S1=0,S2=0,S3=0,Sum=0;
+    char format[] = "%[^:]: %d %d %d";
+    char N[100];
+    while(getline(source,a)){
+        sscanf(a.c_str(),format,N,&S1,&S2,&S3);
+        Sum = S1+S2+S3;
+        names.push_back(N);
+        scores.push_back(Sum);
+        grades.push_back(score2grade(Sum));
+        
+    }
 }
 
-ComplexNumber operator-(double d,const ComplexNumber &c){
-	return ComplexNumber(d-c.real,0-c.imag);
+void getCommand(string &command, string &key){
+    
+    string A;
+    char format[] = "%s %[^/0]/0",a[99],b[99];
+    cout<<"Please input your command:\n";
+    getline(cin,A);
+    sscanf(A.c_str(),format,a,b);
+    command = a;
+    key = b;
+    
 }
 
-ComplexNumber operator*(double d,const ComplexNumber &c){
-	return ComplexNumber(d*c.real,d*c.imag);
+void searchName(vector<string> &names, vector<int> &scores, vector<char> &grades, string key){
+    bool a=false;
+    cout<<"---------------------------------\n";
+    for(long unsigned int i=0;i<names.size();i++){
+        if(toUpperStr(names[i])==toUpperStr(key)){
+            cout<<names[i]<<"'s score = "<<scores[i]<<'\n';
+            cout<<names[i]<<"'s grade = "<<grades[i]<<'\n';
+            a = true;
+        }
+    }
+    if(!a) cout<<"Cannot found.\n";
+    cout<<"---------------------------------\n";
+
+
 }
 
-ComplexNumber operator/(double d,const ComplexNumber &c){
-	ComplexNumber a(d,0);
-	return a/c;
+void searchGrade(vector<string> &names, vector<int> &scores, vector<char> &grades, string key){
+    
+    bool a=false;
+    cout<<"---------------------------------\n";
+    for(long unsigned int i=0;i<grades.size();i++){
+        if(grades[i]==key[0]){
+            cout<<names[i]<<" ("<<scores[i]<<")\n";
+            a = true;
+        }
+    }
+    if(!a) cout<<"Cannot found.\n";
+    cout<<"---------------------------------\n";
+
 }
 
-bool ComplexNumber::operator==(const ComplexNumber &c){
-	if(real==c.real && imag==c.imag)return 1;
-	return 0;
-}	
 
-bool operator==(double d,const ComplexNumber &c){
-	if(d==c.real && 0==c.imag) return 1;
-	return 0;
+int main(){
+    string filename = "name_score.txt";
+    vector<string> names;
+    vector<int> scores;
+    vector<char> grades; 
+    importDataFromFile(filename, names, scores, grades);
+    
+    do{
+        string command, key;
+        getCommand(command,key);
+        command = toUpperStr(command);
+        key = toUpperStr(key);
+        if(command == "EXIT") break;
+        else if(command == "GRADE") searchGrade(names, scores, grades, key);
+        else if(command == "NAME") searchName(names, scores, grades, key);
+        else{
+            cout << "---------------------------------\n";
+            cout << "Invalid command.\n";
+            cout << "---------------------------------\n";
+        }
+    }while(true);
+    
+    return 0;
 }
